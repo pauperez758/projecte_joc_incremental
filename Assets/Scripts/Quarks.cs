@@ -1,8 +1,6 @@
-using System;
 using UnityEngine;
 using BreakInfinity;
 using Extendables;
-using UnityEngine.Rendering;
 using TMPro;
 using UnityEngine.UI;
 
@@ -37,12 +35,12 @@ public class Quarks : MonoBehaviour
     {
         var data = game.data;
 
-        double globalSpeed = 7.0; // *** DEBUG. PER FER EL JOC MÉS RÀPID. ELIMINAR DESPRÉS. ***
+        double globalSpeed = 3.0; // *** DEBUG. PER FER EL JOC MÉS RÀPID. ELIMINAR DESPRÉS. ***
 
 
         return globalSpeed * (id == 1 
-            ? data.quarksCount[id - 1] * QuarkBoost(id - 1) 
-            : 0.1 * data.quarksCount[id - 1] * QuarkBoost(id - 1));
+            ? data.quarksCount[id - 1] * QuarkBoost(id - 1) / (game.spin / 1000)
+            : 0.1 * data.quarksCount[id - 1] * QuarkBoost(id - 1) / (game.spin / 1000));
     }
     public void QuarkBoost()
     {

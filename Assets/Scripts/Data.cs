@@ -5,6 +5,7 @@ using BreakInfinity;
 public class Data
 {
     public BigDouble quark;
+    public BigDouble spinLevels;
 
     public BigDouble[] quarksCount = new BigDouble[8];
     public ushort[] quarksLevels = new ushort[8];
@@ -16,6 +17,7 @@ public class Data
     public Data()
     {
         quark = 10;
+        spinLevels = 0;
 
         quarksCount = new BigDouble[8];
         quarksLevels = new ushort[8];
