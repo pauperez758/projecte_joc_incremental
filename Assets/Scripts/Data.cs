@@ -14,6 +14,9 @@ public class Data
     public bool[] quarksUnlocked = new bool[8];
 
     public long quarkBoosts;
+
+    public BigDouble quarkCondensationBoost;
+    public BigDouble highestFirstQuarks;
     public Data()
     {
         quark = 10;
@@ -24,8 +27,9 @@ public class Data
         quarksBoosts = new BigDouble[8];
         quarkShiftBoosts = new BigDouble[8];
         quarksUnlocked = new bool[8];
+        highestFirstQuarks = 0;
 
-        quarkBoosts = 0;
+    quarkBoosts = 0;
 
         for (int i = 0; i < 8; i++)
         {

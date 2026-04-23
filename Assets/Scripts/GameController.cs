@@ -3,6 +3,7 @@ using TMPro;
 using Extendables;
 using BreakInfinity;
 using static BreakInfinity.BigDouble;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class GameController : MonoBehaviour
     public TMP_Text quarksText;
     public TMP_Text quarksPerSecondText;
     public TMP_Text spinText;
+
+    public Image spinCostButton;
     public TMP_Text spinCostText;
 
     public BigDouble spin => 1000 * Pow(0.89, data.spinLevels);
@@ -24,6 +27,7 @@ public class GameController : MonoBehaviour
         data = new Data();
     }
 
+
     public void Update()
     {
         quarksText.text = $"Tens <color=#00F5FF>{data.quark.Notate(1)}</color> quarks.";
@@ -31,6 +35,7 @@ public class GameController : MonoBehaviour
 
         spinText.text = $"Spin: {(spin == 1000 ? "1000" : (spin * (((1e3 / Pow(10, spin.Exponent)) * 1e3)) / 10000).ToString("F0"))} {(spin < 100 ? $"/ {(((1e3 / Pow(10, spin.Exponent)) * 1e3)) / 10000}" : "")}";
         spinCostText.text = $"Cost: {spinCost.Notate(0)}";
+        spinCostButton.color = data.quark >= spinCost ? quarks.BuyGreen : quarks.BuyRed;
     }
 
     public void BuySpin()
