@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine.UI;
 using static BreakInfinity.BigDouble;
 
-public class Quarks : MonoBehaviour 
+public class Quarks : MonoBehaviour
 {
     // TUTORIAL PART 2 MIN 1:26:07
 
@@ -19,6 +19,10 @@ public class Quarks : MonoBehaviour
     public TMP_Text quarkCondensationText;
     public Image quarkCondensationButton;
 
+    public GameObject singularityParent; // L'objecte "QuarkSingularity"
+    public TMP_Text txtCost;             // El textMeshPro que indica el cost
+    public Image singularityBtnImage;    // La Image del botó "Buy"
+
     public Color BuyGreen = new Color(0.071f, 0.478f, 0.125f);
     public Color BuyRed = new Color(0.701f, 0.286f, 0.365f);
 
@@ -29,12 +33,12 @@ public class Quarks : MonoBehaviour
 
 
     public BigDouble[] quarksBaseCosts = new BigDouble[8];
-    public BigDouble QuarkCost(int id) => quarkBaseCost[id] * BigDouble.Pow(quarkCostMult[id], game.data.quarksBoosts[id]);
+    public BigDouble QuarkCost(int id) => quarkBaseCost[id] * BigDouble.Pow(quarkCostMult[id], game.data.quarkTierMultipliers[id]);
 
     public BigDouble QuarksUntil10Cost(int id) => QuarkCost(id) * 10 - QuarkCost(id) * game.data.quarksLevels[id];
 
-    private BigDouble QuarkBoost(int id) => BigDouble.Pow(2, game.data.quarksBoosts[id]) * game.data.quarkShiftBoosts[id];
-    
+    private BigDouble QuarkBoost(int id) => BigDouble.Pow(2, game.data.quarkTierMultipliers[id]) * game.data.quarkShiftBoosts[id];
+
     // Si id != 1 el boost es multiplica per 0.1. Els quarks 2-4 produeixen menys
     public BigDouble QuarkProduction(int id)
     {
@@ -43,7 +47,7 @@ public class Quarks : MonoBehaviour
         double globalSpeed = 3.0; // *** DEBUG. PER FER EL JOC MÉS RÀPID. ELIMINAR DESPRÉS. ***
 
 
-        return globalSpeed * (id == 1 
+        return globalSpeed * (id == 1
             ? data.quarksCount[id - 1] * QuarkBoost(id - 1) / (game.spin / 1000)
             : 0.1 * data.quarksCount[id - 1] * QuarkBoost(id - 1) / (game.spin / 1000));
     }
@@ -53,7 +57,7 @@ public class Quarks : MonoBehaviour
 
         for (int i = 0; i < 8; i++)
         {
-            var tempBoost = BigDouble.Pow(2, data.quarkBoosts - i);
+            var tempBoost = BigDouble.Pow(2, data.boostCount - i);
             data.quarkShiftBoosts[i] = tempBoost < 1 ? 1 : tempBoost;
             if (i == 7) data.quarkShiftBoosts[i] *= data.quarkCondensationBoost; // *= o +=? TODO: COMPROVAR QUINA OPCIÓ ÉS MÉS ÒPTIMA PEL "PACING" DEL JOC
         }
@@ -65,7 +69,7 @@ public class Quarks : MonoBehaviour
         var data = game.data;
         if (id < 7 && !data.quarksUnlocked[id + 1])
         {
-            if (data.quarkBoosts >= id - 2)
+            if (data.boostCount >= id - 2)
             {
                 data.quarksUnlocked[id + 1] = true;
             }
@@ -86,7 +90,7 @@ public class Quarks : MonoBehaviour
 
             if (data.quarksLevels[id] >= 10)
             {
-                data.quarksBoosts[id]++;
+                data.quarkTierMultipliers[id]++;
                 data.quarksLevels[id] = 0;
             }
         }
@@ -101,7 +105,7 @@ public class Quarks : MonoBehaviour
             data.quark -= QuarksUntil10Cost(id);
             data.quarksCount[id] += 10 - data.quarksLevels[id];
             data.quarksLevels[id] = 0;
-            data.quarksBoosts[id]++;
+            data.quarkTierMultipliers[id]++;
 
             CheckUnlocks(id);
         }
@@ -110,9 +114,9 @@ public class Quarks : MonoBehaviour
     public void BuyQuarkBoost()
     {
         var data = game.data;
-        if (data.quarkBoosts <= 4)
+        if (data.boostCount <= 4)
         {
-            switch ((int)data.quarkBoosts)
+            switch ((int)data.boostCount)
             {
                 case 0:
                     Boost(3);
@@ -135,7 +139,16 @@ public class Quarks : MonoBehaviour
                 if (data.quarksCount[id] < QuarkBoostCost)
                     return;
                 BoostReset();
-                data.quarkBoosts++;
+                data.boostCount++;
+            }
+        }
+        else
+        {
+            // Per a boosts > 4 que requereixen l'últim quark disponible
+            if (data.quarksCount[7] >= QuarkBoostCost)
+            {
+                BoostReset();
+                data.boostCount++;
             }
         }
     }
@@ -147,15 +160,50 @@ public class Quarks : MonoBehaviour
         data.quark = 10;
         data.quarksCount = new BigDouble[8];
         data.quarksLevels = new ushort[8];
-        data.quarksBoosts = new BigDouble[8];
+        data.quarkTierMultipliers = new BigDouble[8];
         data.quarksUnlocked = new bool[8];
         data.spinLevels = 0;
     }
 
-    public BigDouble QuarkBoostCost => game.data.quarkBoosts > 4 
-        ? 20 + (game.data.quarkBoosts - 4) * 15
+    public BigDouble QuarkBoostCost => game.data.boostCount > 4
+        ? 20 + (game.data.boostCount - 4) * 15
         : 20;
 
+
+    #region QuarkSingularity
+    public BigDouble QuarkSingularityCost => 80 + (game.data.quarkSingularities * 60);
+
+    public void BuyQuarkSingularity()
+    {
+        if (game.data.quarksCount[7] >= QuarkSingularityCost)
+        {
+            game.data.quarkSingularities++;
+            SingularityReset();
+        }
+    }
+
+    public void SingularityReset()
+    {
+        var data = game.data;
+
+        BoostReset();
+        data.boostCount = 0;
+
+        BlockQuarks(); // Bloqueja de l'1 al 7
+
+        data.quarksUnlocked[0] = true; // No és necessari però per assegurar que el primer quark està desbloquejat
+        CheckUnlocks(0);
+
+    }
+    #endregion
+
+    /// <summary>
+    /// Bloqueja els quarks 2-7, deixant només el primer desbloquejat.
+    /// </summary>
+    public void BlockQuarks()
+    {
+        for (int i = 1; i < 8; i++) game.data.quarksUnlocked[i] = false;
+    }
 
     #region QuarkCondensation
     private BigDouble quarkCondensationToGet
@@ -187,17 +235,14 @@ public class Quarks : MonoBehaviour
             {
                 data.quarksCount[i] = 0;
                 data.quarksLevels[i] = 0;
-                data.quarksBoosts[i] = 0; 
+                data.quarkTierMultipliers[i] = 0;
             }
         }
     }
     #endregion
     private void Start()
     {
-        quarksNames = new[] {"First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth"};
-        //quarkBaseCost = new BigDouble[] { 10, 100, 1e4, 1e6, 1e9, 1e13, 1e18, 1e24 };
-        //quarkCostMult = new BigDouble[] { 1e3, 1e4, 1e5, 1e6, 1e8, 1e10, 1e12, 1e15 };
-
+        quarksNames = new[] { "First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth" };
         // *** DEBUG. PER FER EL JOC MÉS RÀPID. ELIMINAR DESPRÉS. ***
         quarkBaseCost = new BigDouble[] { 10, 100, 1e4, 1e5, 1e8, 1e11, 1e15, 1e20 };
         quarkCostMult = new BigDouble[] { 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e10 };
@@ -208,13 +253,23 @@ public class Quarks : MonoBehaviour
     {
         var data = game.data;
         QuarkBoost();
-        int activeQrkIndex = data.quarkBoosts >= 4 ? 7 : (int)data.quarkBoosts + 3;
+        int activeQrkIndex = data.boostCount >= 4 ? 7 : (int)data.boostCount + 3;
 
-        quarkBoostText.text = $"Quark Boost ({(data.quarkBoosts > 4 ? "Boost" : "Shift" )}): requires {QuarkBoostCost} {quarksNames[activeQrkIndex]} Quarks";
+        quarkBoostText.text = $"Quark Boost: requires {QuarkBoostCost.Notate(0)} {quarksNames[activeQrkIndex]} Quarks";
         quarksBoostButton.color = data.quarksCount[activeQrkIndex] >= QuarkBoostCost ? BuyGreen : BuyRed;
 
         quarkCondensationText.text = $"Condensació de quarks (x{quarkCondensationToGet.Notate()})";
-        quarkCondensationButton.gameObject.SetActive(data.quarkBoosts > 4);
+        quarkCondensationButton.gameObject.SetActive(data.boostCount > 4);
+
+        // Actualització UI de la Singularity basat en la teva jerarquia
+        if (txtCost != null)
+            txtCost.text = $"Cost: {QuarkSingularityCost.Notate(0)} 8th Quarks";
+
+        if (singularityBtnImage != null)
+            singularityBtnImage.color = data.quarksCount[7] >= QuarkSingularityCost ? BuyGreen : BuyRed;
+
+        if (singularityParent != null)
+            singularityParent.SetActive(data.boostCount >= 5 || data.quarkSingularities > 0);
 
 
         if (!data.quarksUnlocked[0]) data.quarksUnlocked[0] = true;

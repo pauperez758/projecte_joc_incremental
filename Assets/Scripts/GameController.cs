@@ -18,11 +18,13 @@ public class GameController : MonoBehaviour
     public Image spinCostButton;
     public TMP_Text spinCostText;
 
-    public BigDouble spin => 1000 * Pow(0.89, data.spinLevels);
+    // La Singularity millora l'efectivitat del Spin (com les Galaxies d'AD)
+    public BigDouble spinMultiplier => Max(0.5, 0.89 - (data.quarkSingularities * 0.02));
+    public BigDouble spin => 1000 * Pow(spinMultiplier, data.spinLevels);
     public BigDouble spinCost => 1000 * Pow(10, data.spinLevels);
 
 
-    public void Start()
+    public void Awake()
     {
         data = new Data();
     }
