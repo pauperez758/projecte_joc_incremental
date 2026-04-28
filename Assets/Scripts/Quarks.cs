@@ -10,8 +10,8 @@ public class Quarks : MonoBehaviour
     // TUTORIAL PART 2 MIN 1:26:07
 
     public GameController game;
-    public Quark[] quarks = new Quark[8];
-    public GameObject[] quarkGameObjects = new GameObject[8];
+    public Quark[] quarks;
+    public GameObject[] quarkGameObjects;
 
     public TMP_Text quarkBoostText;
     public Image quarksBoostButton;
@@ -32,12 +32,12 @@ public class Quarks : MonoBehaviour
     public BigDouble[] quarkCostMult;
 
 
-    public BigDouble[] quarksBaseCosts = new BigDouble[8];
+    public BigDouble[] quarksBaseCosts;
     public BigDouble QuarkCost(int id) => quarkBaseCost[id] * BigDouble.Pow(quarkCostMult[id], game.data.quarkTierMultipliers[id]);
 
     public BigDouble QuarksUntil10Cost(int id) => QuarkCost(id) * 10 - QuarkCost(id) * game.data.quarksLevels[id];
 
-    private BigDouble QuarkBoost(int id) => BigDouble.Pow(2, game.data.quarkTierMultipliers[id]) * game.data.quarkShiftBoosts[id];
+    private BigDouble QuarkBoost(int id) => Pow(2, game.data.quarkTierMultipliers[id]) * game.data.quarkBoosts[id];
 
     // Si id != 1 el boost es multiplica per 0.1. Els quarks 2-4 produeixen menys
     public BigDouble QuarkProduction(int id)
@@ -58,8 +58,8 @@ public class Quarks : MonoBehaviour
         for (int i = 0; i < 8; i++)
         {
             var tempBoost = BigDouble.Pow(2, data.boostCount - i);
-            data.quarkShiftBoosts[i] = tempBoost < 1 ? 1 : tempBoost;
-            if (i == 7) data.quarkShiftBoosts[i] *= data.quarkCondensationBoost; // *= o +=? TODO: COMPROVAR QUINA OPCIÓ ÉS MÉS ÒPTIMA PEL "PACING" DEL JOC
+            data.quarkBoosts[i] = tempBoost < 1 ? 1 : tempBoost;
+            if (i == 7) data.quarkBoosts[i] *= data.quarkCondensationBoost; // *= o +=? TODO: COMPROVAR QUINA OPCIÓ ÉS MÉS ÒPTIMA PEL "PACING" DEL JOC
         }
     }
 
@@ -108,6 +108,48 @@ public class Quarks : MonoBehaviour
             data.quarkTierMultipliers[id]++;
 
             CheckUnlocks(id);
+        }
+    }
+
+    public void BuyMax()
+    {
+        var data = game.data;
+
+        for (int i = 7; i >= 0; i--)
+        {
+            if (!data.quarksUnlocked[i]) continue;
+
+            BigDouble costToFinishTen = QuarksUntil10Cost(i);
+
+            if (data.quark >= costToFinishTen)
+            {
+                data.quark -= costToFinishTen;
+                data.quarksCount[i] += (10 - data.quarksLevels[i]);
+                data.quarksLevels[i] = 0;
+                data.quarkTierMultipliers[i]++;
+
+                BigDouble costPerPack = QuarkCost(i);
+                BigDouble mult = quarkCostMult[i];
+
+                if (data.quark >= costPerPack)
+                {
+                    long toBuy = (long)Floor(Log(data.quark * (mult - 1) / costPerPack + 1, mult)).ToDouble();
+                    if (toBuy > 0)
+                    {
+                        BigDouble totalBulkCost = costPerPack * (Pow(mult, toBuy) - 1) / (mult - 1);
+
+                        if (totalBulkCost > data.quark) totalBulkCost = data.quark;
+
+                        data.quark -= totalBulkCost;
+                        data.quarksCount[i] += toBuy * 10;
+                        data.quarkTierMultipliers[i] += toBuy;
+                    }
+                }
+            }
+
+            if (data.quark < 0) data.quark = 0;
+
+            CheckUnlocks(i);
         }
     }
 

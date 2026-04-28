@@ -23,10 +23,12 @@ public class GameController : MonoBehaviour
     public BigDouble spin => 1000 * Pow(spinMultiplier, data.spinLevels);
     public BigDouble spinCost => 1000 * Pow(10, data.spinLevels);
 
+    public float SaveTime;
+
 
     public void Awake()
     {
-        data = new Data();
+        data = SaveSystem.SaveExists("playerData") ? SaveSystem.LoadPlayer<Data>("playerData") : new Data();
     }
 
 
@@ -38,6 +40,11 @@ public class GameController : MonoBehaviour
         spinText.text = $"Spin: {(spin == 1000 ? "1000" : (spin * (((1e3 / Pow(10, spin.Exponent)) * 1e3)) / 10000).ToString("F0"))} {(spin < 100 ? $"/ {(((1e3 / Pow(10, spin.Exponent)) * 1e3)) / 10000}" : "")}";
         spinCostText.text = $"Cost: {spinCost.Notate(0)}";
         spinCostButton.color = data.quark >= spinCost ? quarks.BuyGreen : quarks.BuyRed;
+        SaveTime += Time.deltaTime;
+
+        if (SaveTime < 15) return;
+        SaveTime = 0;
+        SaveSystem.SavePlayer(data, "playerData");
     }
 
     public void BuySpin()

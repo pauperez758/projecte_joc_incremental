@@ -9,7 +9,7 @@ public class Data
 
     public BigDouble[] quarksCount = new BigDouble[8];
     public ushort[] quarksLevels = new ushort[8];
-    public BigDouble[] quarkShiftBoosts = new BigDouble[8];
+    public BigDouble[] quarkBoosts = new BigDouble[8];
     public BigDouble[] quarkTierMultipliers = new BigDouble[8];
     public bool[] quarksUnlocked = new bool[8];
 
@@ -27,7 +27,7 @@ public class Data
         quarksCount = new BigDouble[8];
         quarksLevels = new ushort[8];
         quarkTierMultipliers = new BigDouble[8];
-        quarkShiftBoosts = new BigDouble[8];
+        quarkBoosts = new BigDouble[8];
         quarksUnlocked = new bool[8];
         highestFirstQuarks = 0;
 
@@ -37,7 +37,7 @@ public class Data
 
         for (int i = 0; i < 8; i++)
         {
-            quarkShiftBoosts[i] = 1; // El multiplicador base ha de ser 1
+            quarkBoosts[i] = 1; // El multiplicador base ha de ser 1
         }
     }
 }
