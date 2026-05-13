@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Quark : MonoBehaviour
+public class Accelerator : MonoBehaviour
 {
     public TMP_Text nameText;
     public TMP_Text infoText;
