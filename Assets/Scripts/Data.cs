@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BreakInfinity;
 using System.Linq;
 using UnityEngine;
+using JetBrains.Annotations;
 
 [Serializable]
 public class Data
@@ -35,6 +36,11 @@ public class Data
     #region Particle Upgrades
     public List<bool> particleUpgradeBought;
     public BigDouble particleUpgradePPGainLevel;
+    #endregion
+
+    #region challenges
+    public List<bool> challengeCompleted;
+    public int currentChallenge;
     #endregion
     public Data()
     {
@@ -71,7 +77,12 @@ public class Data
         #region Particle Upgrades
         particleUpgradeBought = CreateList<bool>(16);
         particleUpgradePPGainLevel = 0;
-    #endregion
+        #endregion
+
+        #region challenges
+        challengeCompleted = CreateList<bool>(12);
+        currentChallenge = 1;
+        #endregion
     }
 
     public static List<T> CreateList<T>(int capacity)

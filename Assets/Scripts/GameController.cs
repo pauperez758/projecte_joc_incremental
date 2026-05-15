@@ -11,10 +11,12 @@ public class GameController : MonoBehaviour
     public AchievementManager achievementsManager;
     public AcceleratorsManager acceleratorsManager;
     public ParticleUpgradeManager particleUpgradeManager;
+    public ReptesManager reptesManager;
 
     public Canvas acceleratorsCanvas;
     public Canvas achievementsCanvas;
     public Canvas particlesCanvas;
+    public Canvas challengeCanvas;
 
     public Canvas particleUpgradesCanvas;
 
@@ -28,8 +30,16 @@ public class GameController : MonoBehaviour
     public Image spinCostButton;
     public TMP_Text spinCostText;
 
-    // La Singularity millora l'efectivitat del Spin (com les Galaxies d'AD)
-    public BigDouble spinMultiplier => Max(0.5, 0.89 - (data.quarkSingularities * 0.02));
+    // La Singularity millora l'efectivitat del Spin. Ho tinc en compte abans de calcular l'spinMultiplier
+    public BigDouble spinMultiplier
+    {
+        get
+        {
+            // L'efecte de singularitat es duplica si s'ha comprat la millora 16 d'acceleradors ("Les Singularitats de Quarks són el doble d'efectives")
+            BigDouble singularityEffect = 0.02 * (data.particleUpgradeBought[13] ? 2 : 1);
+            return Max(0.5, 0.89 - (data.quarkSingularities * singularityEffect));
+        }
+    }
     public BigDouble spin => 1000 * Pow(spinMultiplier, data.spinLevels);
     public BigDouble spinCost => 1000 * Pow(10, data.spinLevels);
 
@@ -39,9 +49,10 @@ public class GameController : MonoBehaviour
     public void Start()
     {
         data = SaveSystem.SaveExists("playerData") ? SaveSystem.LoadPlayer<Data>("playerData") : new Data();
+        
         achievementsManager.StartAcheivements();
-
         particleUpgradeManager.StartParticleUpgrades();
+        reptesManager.StartChallenges();
     }
 
 
@@ -52,8 +63,8 @@ public class GameController : MonoBehaviour
         CanvasGroupChange(data.quark < double.MaxValue, nonTranscendence);
         CanvasGroupChange(data.quark >= double.MaxValue, transcendence);
 
-        quarksText.text = $"Tens <color=#00F5FF>{data.quark.Notate(1)}</color> quarks.";
-        quarksPerSecondText.text = $"Estàs aconseguint {acceleratorsManager.AcceleratorProduction(1).Notate()} quarks per segon.";
+        quarksText.text = $"Tens <color=#D142F0>{data.quark.Notate(1)}</color> quarks.";
+        quarksPerSecondText.text = $"Estàs aconseguint <color=#D142F0>{acceleratorsManager.AcceleratorProduction(1).Notate()}</color> quarks per segon.";
 
         spinText.text = $"Spin: {(spin == 1000 ? "1000" : (spin * (((1e3 / Pow(10, spin.Exponent)) * 1e3)) / 10000).ToString("F0"))} {(spin < 100 ? $"/ {(((1e3 / Pow(10, spin.Exponent)) * 1e3)) / 10000}" : "")}";
         spinCostText.text = $"Cost: {spinCost.Notate(0)}";
@@ -85,6 +96,7 @@ public class GameController : MonoBehaviour
         acceleratorsCanvas.gameObject.SetActive(false);
         achievementsCanvas.gameObject.SetActive(false);
         particlesCanvas.gameObject.SetActive(false);
+        challengeCanvas.gameObject.SetActive(false);
 
         switch (location)
         {
@@ -97,6 +109,10 @@ public class GameController : MonoBehaviour
             case "particles":
                 particlesCanvas.gameObject.SetActive(true);
                 break;
+            case "challenges":
+                challengeCanvas.gameObject.SetActive(true);
+                break;
+
         }
     }
 
@@ -115,5 +131,12 @@ public class GameController : MonoBehaviour
     {
         group.alpha = statement ? 1 : 0;
         group.blocksRaycasts = group.interactable = statement;
+    }
+
+    /// <summary>
+    /// ELIMINAR DESPRÉS!!!! PER FER DEBUG.
+    /// </summary>
+    public void DEBUGMULTQUARKSX10(){
+                data.quark *= 10;
     }
 }

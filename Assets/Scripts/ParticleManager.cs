@@ -1,9 +1,7 @@
 using BreakInfinity;
 using Extendables;
 using TMPro;
-using UnityEditor.Search;
 using UnityEngine;
-using UnityEngine.UI;
 
 //TUTORIAL EP.10 1:15:43
 public class ParticleManager : MonoBehaviour
