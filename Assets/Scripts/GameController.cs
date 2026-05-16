@@ -13,12 +13,16 @@ public class GameController : MonoBehaviour
     public ParticleUpgradeManager particleUpgradeManager;
     public ReptesManager reptesManager;
 
+    public Canvas configCanvas;
     public Canvas acceleratorsCanvas;
     public Canvas achievementsCanvas;
     public Canvas particlesCanvas;
     public Canvas challengeCanvas;
 
     public Canvas particleUpgradesCanvas;
+
+    public Canvas crearUsuariCanvas;
+    public Canvas iniciarSessioCanvas;
 
     public CanvasGroup nonTranscendence;
     public CanvasGroup transcendence;
@@ -93,6 +97,7 @@ public class GameController : MonoBehaviour
 
     public void Navigate(string location)
     {
+        configCanvas.gameObject.SetActive(false);
         acceleratorsCanvas.gameObject.SetActive(false);
         achievementsCanvas.gameObject.SetActive(false);
         particlesCanvas.gameObject.SetActive(false);
@@ -112,7 +117,9 @@ public class GameController : MonoBehaviour
             case "challenges":
                 challengeCanvas.gameObject.SetActive(true);
                 break;
-
+            case "config":
+                configCanvas.gameObject.SetActive(true);
+                break;
         }
     }
 
@@ -123,6 +130,20 @@ public class GameController : MonoBehaviour
         switch (location)
         {
             case "particleUpgrades": particleUpgradesCanvas.gameObject.SetActive(true);
+                break;
+        }
+    }
+
+    public void ConfigNavigate(string location)
+    {
+        crearUsuariCanvas.gameObject.SetActive(false);
+        iniciarSessioCanvas.gameObject.SetActive(false);
+
+        switch (location)
+        {
+            case "crearUsuari": crearUsuariCanvas.gameObject.SetActive(true);
+                break;
+            case "iniciarSessio": iniciarSessioCanvas.gameObject.SetActive(true);
                 break;
         }
     }
