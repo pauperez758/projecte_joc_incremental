@@ -11,12 +11,16 @@ public class ReptesManager : MonoBehaviour
     public Image[] challengeStartButtons;
     public TMP_Text[] challengeStartText;
 
-    public Color incompleteYellow = new Color(0.443f, 0.490f, 0.149f);
-    public Color completeYellow = new Color(0.874f, 0.874f, 0.172f);
-    public Color runningGrey = new Color(0.149f, 0.196f, 0.220f);
+    public Color incompleteYellow;
+    public Color completeYellow;
+    public Color runningGrey;
 
     public void StartChallenges()
     {
+        incompleteYellow = new Color(0.443f, 0.490f, 0.149f);
+        completeYellow = new Color(0.874f, 0.874f, 0.172f);
+        runningGrey = new Color(0.149f, 0.196f, 0.220f);
+
         var data = game.data;
         try
         {
@@ -119,6 +123,7 @@ public class ReptesManager : MonoBehaviour
     {
         var data = game.data;
         if (id == data.currentChallenge) return; // Si ja estem en aquest repte, no fem res
+        if (data.challengeCompleted[id]) return;
         data.currentChallenge = id;
         particleManager.Transcendence();
         
@@ -134,6 +139,7 @@ public class ReptesManager : MonoBehaviour
     public void CompleteChallenge(int id)
     {
         game.data.challengeCompleted[id] = true;
+        game.data.currentChallenge = 0;
         UpdateChallengeUI();
     }
 }

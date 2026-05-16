@@ -18,6 +18,7 @@ public class AcceleratorsManager : MonoBehaviour
     public Image acceleratorBoostButton;
 
     public TMP_Text quarkCondensationText;
+    public TMP_Text quarkCondensationTotalText;
     public Image quarkCondensationButton;
 
     public GameObject singularityParent; // L'objecte "QuarkSingularity"
@@ -31,7 +32,6 @@ public class AcceleratorsManager : MonoBehaviour
 
     public BigDouble[] acceleratorBaseCost;
     public BigDouble[] acceleratorCostMult;
-
 
     public BigDouble[] acceleratorsBaseCosts;
     public BigDouble AcceleratorCost(int id) => acceleratorBaseCost[id] * BigDouble.Pow(acceleratorCostMult[id], game.data.acceleratorTierMultipliers[id]);
@@ -278,10 +278,9 @@ public class AcceleratorsManager : MonoBehaviour
             var current = data.AcceleratorsCount[0] == 0 ? 0 : Floor(Log10(Abs(data.AcceleratorsCount[0])));
             var highest = data.highestFirstAccelerators == 0 ? 0 : Floor(Log10(Abs(data.highestFirstAccelerators)));
 
-            return current > highest
-            ? (current - highest < 10
-                ? 1
-                : (Pow(Max(Floor(Log10(data.AcceleratorsCount[0])) / 10, 1), 2) + data.quarkCondensationBoost - 1) / data.quarkCondensationBoost)
+            return current > highest ?
+                current - highest < 10 ?
+                1 : (Pow(Max(Floor(Log10(data.AcceleratorsCount[0])) / 10, 1), 2) + data.quarkCondensationBoost - 1) / data.quarkCondensationBoost
             : 1;
         }
     }
@@ -326,14 +325,16 @@ public class AcceleratorsManager : MonoBehaviour
         if (game.acceleratorsCanvas.gameObject.activeSelf)
         {
             int activeQrkIndex = data.boostCount >= 4 ? 7 : (int)data.boostCount + 3;
-            acceleratorBoostText.text = $"Boost d'accelerador: necessita {AcceleratorBoostCost.Notate(0)} {acceleratorsNames[activeQrkIndex]} Quarks";
+            acceleratorBoostText.text = $"Boost d'accelerador: necessita {AcceleratorBoostCost.Notate(0)} {acceleratorsNames[activeQrkIndex]} acceleradors";
             acceleratorBoostButton.color = data.AcceleratorsCount[activeQrkIndex] >= AcceleratorBoostCost ? BuyGreen : BuyRed;
 
             quarkCondensationText.text = $"Condensació de quarks (x{quarkCondensationToGet.Notate()})";
+            quarkCondensationTotalText.text = $"Total: x{game.data.quarkCondensationBoost.Notate()}";
+
             quarkCondensationButton.gameObject.SetActive(data.boostCount > 4);
 
             if (txtCost != null)
-                txtCost.text = $"Cost: {QuarkSingularityCost.Notate(0)} 8th Accelerador";
+                txtCost.text = $"Cost: {QuarkSingularityCost.Notate(0)} vuitè Acceleradors";
 
             if (singularityBtnImage != null)
                 singularityBtnImage.color = data.AcceleratorsCount[7] >= QuarkSingularityCost ? BuyGreen : BuyRed;

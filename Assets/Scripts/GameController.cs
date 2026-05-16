@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     public Data data;
+    public SaveManager saveManager;
     public AchievementManager achievementsManager;
     public AcceleratorsManager acceleratorsManager;
     public ParticleUpgradeManager particleUpgradeManager;
@@ -23,6 +24,7 @@ public class GameController : MonoBehaviour
 
     public Canvas crearUsuariCanvas;
     public Canvas iniciarSessioCanvas;
+    public Canvas tancarSessioCanvas;
 
     public CanvasGroup nonTranscendence;
     public CanvasGroup transcendence;
@@ -47,8 +49,6 @@ public class GameController : MonoBehaviour
     public BigDouble spin => 1000 * Pow(spinMultiplier, data.spinLevels);
     public BigDouble spinCost => 1000 * Pow(10, data.spinLevels);
 
-    public float SaveTime;
-
 
     public void Start()
     {
@@ -57,6 +57,8 @@ public class GameController : MonoBehaviour
         achievementsManager.StartAcheivements();
         particleUpgradeManager.StartParticleUpgrades();
         reptesManager.StartChallenges();
+
+        saveManager.EnableAutoSave();
     }
 
 
@@ -73,11 +75,11 @@ public class GameController : MonoBehaviour
         spinText.text = $"Spin: {(spin == 1000 ? "1000" : (spin * (((1e3 / Pow(10, spin.Exponent)) * 1e3)) / 10000).ToString("F0"))} {(spin < 100 ? $"/ {(((1e3 / Pow(10, spin.Exponent)) * 1e3)) / 10000}" : "")}";
         spinCostText.text = $"Cost: {spinCost.Notate(0)}";
         spinCostButton.color = data.quark >= spinCost ? acceleratorsManager.BuyGreen : acceleratorsManager.BuyRed;
-        SaveTime += Time.deltaTime;
-
-        if (SaveTime < 15) return;
-        SaveTime = 0;
-        SaveSystem.SavePlayer(data, "playerData");
+        
+        //SaveTime += Time.deltaTime; Ja no cal guardar cada 15 segons. El sistema nou amb backend hauria de funcionar
+        //if (SaveTime < 15) return;
+        //SaveTime = 0;
+        //SaveSystem.SavePlayer(data, "playerData");
     }
 
     public void BuySpin()
@@ -89,10 +91,23 @@ public class GameController : MonoBehaviour
         }
     }
 
-    //TODO: BUYMAXSPIN
     public void BuyMaxSpin()
     {
+        if (data.quark < spinCost) return;
 
+        BigDouble currentCost = spinCost;
+        BigDouble mult = 10;
+
+        BigDouble maxLevels = Floor(Log10(data.quark * (mult - 1) / currentCost + 1));
+
+        if (maxLevels <= 0) return;
+
+        BigDouble totalCost = currentCost * (Pow(mult, maxLevels) - 1) / (mult - 1);
+
+        if (totalCost > data.quark) totalCost = data.quark;
+
+        data.quark -= totalCost;
+        data.spinLevels += maxLevels;
     }
 
     public void Navigate(string location)
@@ -138,12 +153,15 @@ public class GameController : MonoBehaviour
     {
         crearUsuariCanvas.gameObject.SetActive(false);
         iniciarSessioCanvas.gameObject.SetActive(false);
+        tancarSessioCanvas.gameObject.SetActive(false);
 
         switch (location)
         {
             case "crearUsuari": crearUsuariCanvas.gameObject.SetActive(true);
                 break;
             case "iniciarSessio": iniciarSessioCanvas.gameObject.SetActive(true);
+                break;
+            case "tancarSessio": tancarSessioCanvas.gameObject.SetActive(true);
                 break;
         }
     }
@@ -152,6 +170,16 @@ public class GameController : MonoBehaviour
     {
         group.alpha = statement ? 1 : 0;
         group.blocksRaycasts = group.interactable = statement;
+    }
+
+
+    public void QuitGame()
+    {
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #else
+        Application.Quit();
+        #endif
     }
 
     /// <summary>

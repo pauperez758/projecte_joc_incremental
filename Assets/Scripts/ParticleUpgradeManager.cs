@@ -60,7 +60,7 @@ public class ParticleUpgradeManager : MonoBehaviour
             "Generació de punts de transcendència basada en la transcendència més ràpida\nActualment: ",
             "Comences amb el 8è accelerador desbloquejat i una Singularitat de Quarks",
 
-            "Multiplica els punts de partícula de totes les fonts per 2\nActualment: " // No l'inclueixo aquí perquè és un upgrade de partícules, no d'acceleradors
+            "Multiplica els punts de partícula de totes les fonts per 2\nActualment: "
         };
 
         particleUpgradeCosts = new BigDouble[]
