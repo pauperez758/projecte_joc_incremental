@@ -45,7 +45,8 @@ public class SaveManager : MonoBehaviour
     {
         game.data = SaveSystem.SaveExists("playerData") ? SaveSystem.LoadPlayer<Data>("playerData") : new Data();
         offlineProductionManager.CalculateOfflineProduction();
-
+        game.achievementsManager.UpdateAchievementUI();
+        game.achievementsManager.UpdateRowUI();
         if (saveIntervalSlider != null)
         {
             saveIntervalSlider.minValue = 10f;
@@ -122,6 +123,8 @@ public class SaveManager : MonoBehaviour
         SaveSystem.DeleteLocalSave("playerData");
         game.data = new Data();
         cloudSaveEnabled = false; // simplement desactivo el cloud save per evitar que el núvol es quedi sense dades
+        game.achievementsManager.UpdateAchievementUI();
+        game.achievementsManager.UpdateRowUI();
         SetStatus("<color=#E05454>Dades locals eliminades.</color> Partida nova iniciada.");
     }
 

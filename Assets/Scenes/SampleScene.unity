@@ -235,8 +235,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 90727ef1e5c911a4ebb89c62265b4dd6, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: fee7cb0981897184ca8e254670a1d84f, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -4206,7 +4206,7 @@ GameObject:
   - component: {fileID: 574871702}
   - component: {fileID: 574871701}
   m_Layer: 5
-  m_Name: txtCost
+  m_Name: txtSingularityCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4550,7 +4550,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 33.35
+  m_fontSize: 30.7
   m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4971,7 +4971,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &634797060
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6862,7 +6862,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1262745428}
   - {fileID: 1890533949}
   m_Father: {fileID: 975996930}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7406,7 +7405,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &975996930
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9951,11 +9950,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 888397196}
+  m_Father: {fileID: 1890533949}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 272.1, y: -6.8053}
+  m_AnchoredPosition: {x: 272.1, y: 0}
   m_SizeDelta: {x: 245.8303, y: 38.138}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1262745429
@@ -11069,7 +11068,7 @@ MonoBehaviour:
   quarkCondensationTotalText: {fileID: 1262745430}
   quarkCondensationButton: {fileID: 1890533951}
   singularityParent: {fileID: 1555232029}
-  txtCost: {fileID: 574871701}
+  txtSingularityCost: {fileID: 574871701}
   singularityBtnImage: {fileID: 1660822379}
   BuyGreen: {r: 0.071, g: 0.478, b: 0.125, a: 1}
   BuyRed: {r: 0.701, g: 0.286, b: 0.365, a: 1}
@@ -12028,8 +12027,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 90727ef1e5c911a4ebb89c62265b4dd6, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: fee7cb0981897184ca8e254670a1d84f, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -15479,8 +15478,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 90727ef1e5c911a4ebb89c62265b4dd6, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: fee7cb0981897184ca8e254670a1d84f, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -15695,6 +15694,7 @@ RectTransform:
   m_Children:
   - {fileID: 1813886658}
   - {fileID: 384846847}
+  - {fileID: 1262745428}
   m_Father: {fileID: 888397196}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}

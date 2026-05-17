@@ -7,8 +7,6 @@ using static BreakInfinity.BigDouble;
 
 public class AcceleratorsManager : MonoBehaviour
 {
-    // TUTORIAL PART 2 MIN 1:26:07
-
     public GameController game;
     public ParticleUpgradeManager particleUpgradeManager;
     public Accelerator[] accelerators;
@@ -21,9 +19,9 @@ public class AcceleratorsManager : MonoBehaviour
     public TMP_Text quarkCondensationTotalText;
     public Image quarkCondensationButton;
 
-    public GameObject singularityParent; // L'objecte "QuarkSingularity"
-    public TMP_Text txtCost;             // El textMeshPro que indica el cost
-    public Image singularityBtnImage;    // La Image del botó "Buy"
+    public GameObject singularityParent;
+    public TMP_Text txtSingularityCost;
+    public Image singularityBtnImage;
 
     public Color BuyGreen = new Color(0.071f, 0.478f, 0.125f);
     public Color BuyRed = new Color(0.701f, 0.286f, 0.365f);
@@ -32,7 +30,7 @@ public class AcceleratorsManager : MonoBehaviour
 
     public BigDouble[] acceleratorBaseCost;
     public BigDouble[] acceleratorCostMult;
-    public BigDouble AcceleratorCost(int id) => acceleratorBaseCost[id] * BigDouble.Pow(acceleratorCostMult[id], game.data.acceleratorTierMultipliers[id]);
+    public BigDouble AcceleratorCost(int id) => acceleratorBaseCost[id] * Pow(acceleratorCostMult[id], game.data.acceleratorTierMultipliers[id]);
 
     public BigDouble AcceleratorsUntil10Cost(int id) => AcceleratorCost(id) * 10 - AcceleratorCost(id) * game.data.acceleratorsLevels[id];
 
@@ -40,25 +38,24 @@ public class AcceleratorsManager : MonoBehaviour
     //private BigDouble AcceleratorBoost(int id) => game.achievementsManager.achievementBoost *
     //    Pow(game.data.particleUpgradeBought[1] ? 2.2 : 2, game.data.acceleratorTierMultipliers[id]) * game.data.acceleratorsBoosts[id];
 
-    private BigDouble AcceleratorBoost(int id) => game.achievementsManager.achievementBoost *
+    public BigDouble AcceleratorBoost(int id) => game.achievementsManager.achievementBoost *
     Pow(game.data.particleUpgradeBought[1] ? 2.2 : 2, game.data.acceleratorTierMultipliers[id])
     * game.data.acceleratorsBoosts[id];
 
-    // Si id != 1 el boost es multiplica per 0.1. Els quarks 2-4 produeixen menys
     public BigDouble AcceleratorProduction(int id)
     {
         var data = game.data;
 
 
         return (id == 1
-            ? data.AcceleratorsCount[id - 1] 
-            * AcceleratorBoost(id - 1) / (game.spin / 1000)
-            //: 0.1 Posaré 0.15 per augmentar la producció base moltíssim per fer el joc més ràpid i presentable
+            ? data.AcceleratorsCount[0]
+            * AcceleratorBoost(0) / (game.spin / 1000)
+            //: 0.1 
             : 0.11
             * data.AcceleratorsCount[id - 1] 
             * AcceleratorBoost(id - 1) / (game.spin / 1000))
-                * particleUpgradeManager.ParticleUpgradeBoostCurrently(0)
-                * particleUpgradeManager.ParticleUpgradeBoostCurrently(2)
+                * particleUpgradeManager.ParticleUpgradeBoostCurrently(0) // Boost de la millora 0 de partícules (temps jugat)
+                * particleUpgradeManager.ParticleUpgradeBoostCurrently(2) // Boost de la millora 2 de partícules (temps en transcendència)
                 * (id == 1 || id == 8 ? particleUpgradeManager.ParticleUpgradeBoostCurrently(4) : 1)
                 * (id == 2 || id == 7 ? particleUpgradeManager.ParticleUpgradeBoostCurrently(5) : 1)
                 * (id == 3 || id == 6 ? particleUpgradeManager.ParticleUpgradeBoostCurrently(8) : 1)
@@ -66,7 +63,7 @@ public class AcceleratorsManager : MonoBehaviour
     }
 
     // 
-    public void AcceleratorBoost()
+    public void RecalculateBoosts()
     {
         var data = game.data;
 
@@ -85,12 +82,6 @@ public class AcceleratorsManager : MonoBehaviour
             if (i == 7) data.acceleratorsBoosts[i] *= data.quarkCondensationBoost;
         }
     }
-    // Per a la funció de càlcul offline, on no es poden actualitzar els boosts en temps real
-    public BigDouble AcceleratorBoostSnapshot(int id) =>
-    game.achievementsManager.achievementBoost *
-    Pow(game.data.particleUpgradeBought[1] ? 2.2 : 2, game.data.acceleratorTierMultipliers[id])
-    * game.data.acceleratorsBoosts[id];
-
 
     // Comprova si el jugador ha desbloquejat el següent quark després de comprar un nivell o un boost
     public void CheckUnlocks(int id)
@@ -343,7 +334,7 @@ public class AcceleratorsManager : MonoBehaviour
     private void Update()
     {
         var data = game.data;
-        AcceleratorBoost();
+        RecalculateBoosts();
         data.quark += AcceleratorProduction(1) * Time.deltaTime;
         for (int i = 0; i < 7; i++) data.AcceleratorsCount[i] += AcceleratorProduction(i + 2) * Time.deltaTime;
         if (!data.acceleratorsUnlocked[0]) data.acceleratorsUnlocked[0] = true;
@@ -353,7 +344,7 @@ public class AcceleratorsManager : MonoBehaviour
         if (game.acceleratorsCanvas.gameObject.activeSelf)
         {
             int activeQrkIndex = data.boostCount >= 4 ? 7 : (int)data.boostCount + 3;
-            acceleratorBoostText.text = $"Boost d'accelerador: necessita {AcceleratorBoostCost.Notate(0)} {acceleratorsNames[activeQrkIndex]} acceleradors";
+            acceleratorBoostText.text = $"Boost d'accelerador ({data.boostCount}) necessita {AcceleratorBoostCost.Notate(0)} {acceleratorsNames[activeQrkIndex]} acceleradors";
             acceleratorBoostButton.color = data.AcceleratorsCount[activeQrkIndex] >= AcceleratorBoostCost ? BuyGreen : BuyRed;
 
             quarkCondensationText.text = $"Condensació de quarks (x{quarkCondensationToGet.Notate()})";
@@ -361,8 +352,8 @@ public class AcceleratorsManager : MonoBehaviour
 
             quarkCondensationButton.gameObject.SetActive(data.boostCount > 4);
 
-            if (txtCost != null)
-                txtCost.text = $"Singularitat de Quark ({game.data.quarkSingularities}) necessita {QuarkSingularityCost.Notate(0)} vuitens quarks";
+            if (txtSingularityCost != null)
+                txtSingularityCost.text = $"Singularitat de Quark ({game.data.quarkSingularities}) necessita {QuarkSingularityCost.Notate(0)} vuitens quarks";
             if (singularityBtnImage != null)
                 singularityBtnImage.color = data.AcceleratorsCount[7] >= QuarkSingularityCost ? BuyGreen : BuyRed;
 

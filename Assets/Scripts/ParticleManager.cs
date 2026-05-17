@@ -22,6 +22,16 @@ public class ParticleManager : MonoBehaviour
             pText.text = $"Tens <color=#87CEEB>{data.particlePoints.Notate(2)}</color> partícules";
         }
 
+        if (data.particleUpgradeBought[14])
+        {
+            data.particleGenerationTimer += Time.deltaTime;
+            if (data.particleGenerationTimer >= 1f) // cada segon
+            {
+                data.particleGenerationTimer = 0;
+                data.particlePoints += 1 * particleUpgradeManager.particleUpgradePPGainBoost; // 1 particula/s * mult millora 16
+            }
+        }
+
     }
     public void Transcendence()
     {
@@ -29,6 +39,10 @@ public class ParticleManager : MonoBehaviour
         transOut.Play("TranscendenceOut", 0, 0);
         transIn.Play("TranscendenceIn", 0, 0);
         Invoke(nameof (TranscendenceReset), 1f);
+
+        game.data.particles++;
+
+
         BigDouble globalMult = game.data.particleUpgradeBought[15]
         ? particleUpgradeManager.ParticleUpgradeBoostCurrently(16)
         : 1;

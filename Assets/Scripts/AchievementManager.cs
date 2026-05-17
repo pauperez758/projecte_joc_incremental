@@ -154,7 +154,7 @@ public class AchievementManager : MonoBehaviour
     }
 
     #region UI
-    private void UpdateRowUI()
+    public void UpdateRowUI()
     {
         for (var i = 0; i < rows.Count; i++)
             UpdateSpecificRowUI(i);
@@ -165,7 +165,7 @@ public class AchievementManager : MonoBehaviour
             ? new Color(0f, 1f, 0.76f)
             : new Color(0.1f, 0.1f, 0.12f);
 
-    private void UpdateAchievementUI()
+    public void UpdateAchievementUI()
     {
         for (var i = 0; i < achievements.Count; i++)
             UpdateSpecificAchievementUI(i);

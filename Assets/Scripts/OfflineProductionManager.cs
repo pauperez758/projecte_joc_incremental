@@ -34,7 +34,7 @@ public class OfflineProductionManager : MonoBehaviour
 
         BigDouble[] boosts = new BigDouble[numAccelerators];
         for (int i = 0; i < numAccelerators; i++)
-            boosts[i] = acceleratorsManager.AcceleratorBoostSnapshot(i);
+            boosts[i] = acceleratorsManager.AcceleratorBoost(i);
 
         BigDouble[] counts = new BigDouble[numAccelerators];
         for (int i = 0; i < numAccelerators; i++)
@@ -47,7 +47,7 @@ public class OfflineProductionManager : MonoBehaviour
         BigDouble tPow = 1;
 
         BigDouble dQ = counts[0] * boosts[0] / spin;
-        result += dQ * t; // c₁·t
+        result += dQ * t;
 
         for (int order = 1; order < numAccelerators; order++)
         {

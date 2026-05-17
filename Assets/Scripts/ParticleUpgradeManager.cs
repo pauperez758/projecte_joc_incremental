@@ -57,7 +57,7 @@ public class ParticleUpgradeManager : MonoBehaviour
             "Comences amb el 7è accelerador desbloquejat",
             "Redueix en 9 el nombre d'acceleradors necessaris per als boosts d'acceleració i les Singularitats de Quarks",
             "Les Singularitats de Quarks són el doble d'efectives",
-            "Generació de punts de transcendència basada en la transcendència més ràpida\nActualment: ",
+            "Genera 1 punt de partícula per segon (multiplicat per la millora infinita)",
             "Comences amb el 8è accelerador desbloquejat i una Singularitat de Quarks",
 
             "Multiplica els punts de partícula de totes les fonts per 2\nActualment: "
@@ -86,14 +86,6 @@ public class ParticleUpgradeManager : MonoBehaviour
                     case 9:
                     case 16:
                         SetCurrently(i);
-                        break;
-                    case 14:
-                        string timeStr = game.data.particleFastestPlaytime >= double.MaxValue
-                            ? "cap transcendència encara"
-                            : ParticleUpgradeBoostCurrently(i).ToTimeFormat();
-                        particleUpgrade[i].description.text =
-                            $"{particleNames[i]}{timeStr}" +
-                            $"\nCost: {(i < 16 ? particleUpgradeCosts[i] : particleUpgradePPGainCost)}";
                         break;
                     default:
                         particleUpgrade[i].description.text = $"{particleNames[i]}\nCost: {particleUpgradeCosts[i]}";
@@ -179,10 +171,7 @@ public class ParticleUpgradeManager : MonoBehaviour
             case 6: return Pow(data.particlePoints, 1.5) + 1;
             case 8: return data.particles / 5 + 1;
             case 9: return data.particles / 5 + 1;
-            case 14:
-                return data.particleFastestPlaytime >= double.MaxValue
-                    ? 0  // Encara no s'ha fet cap transcendència
-                    : data.particleFastestPlaytime * 10;
+            case 14: return 1;
         }
 
         return 0;
