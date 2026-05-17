@@ -85,8 +85,14 @@ public class AcceleratorsManager : MonoBehaviour
             if (i == 7) data.acceleratorsBoosts[i] *= data.quarkCondensationBoost;
         }
     }
+    // Per a la funció de càlcul offline, on no es poden actualitzar els boosts en temps real
+    public BigDouble AcceleratorBoostSnapshot(int id) =>
+    game.achievementsManager.achievementBoost *
+    Pow(game.data.particleUpgradeBought[1] ? 2.2 : 2, game.data.acceleratorTierMultipliers[id])
+    * game.data.acceleratorsBoosts[id];
 
-    // Comprova si el jugador ha desbloquejat el següent quark després de comprar un nivell o un boost.
+
+    // Comprova si el jugador ha desbloquejat el següent quark després de comprar un nivell o un boost
     public void CheckUnlocks(int id)
     {
         var data = game.data;
@@ -297,7 +303,7 @@ public class AcceleratorsManager : MonoBehaviour
             var highest = data.highestFirstAccelerators == 0 ? 0 : Floor(Log10(Abs(data.highestFirstAccelerators)));
 
             return current > highest ?
-                current - highest < 10 ?
+                current - highest < 3 ?
                 1 : (Pow(Max(Floor(Log10(data.AcceleratorsCount[0])) / 10, 1), 2) + data.quarkCondensationBoost - 1) / data.quarkCondensationBoost
             : 1;
         }
@@ -307,8 +313,11 @@ public class AcceleratorsManager : MonoBehaviour
     {
         if (quarkCondensationToGet > 1)
         {
+            BigDouble toGet = quarkCondensationToGet;
+            BigDouble boostAbans = game.data.quarkCondensationBoost;
+
             game.data.highestFirstAccelerators = game.data.AcceleratorsCount[0];
-            game.data.quarkCondensationBoost = game.data.quarkCondensationBoost * quarkCondensationToGet;
+            game.data.quarkCondensationBoost = boostAbans * toGet; // per alguna raó he de guardar el boost abans de multiplicar-lo per a que el quarkCondensationToGet es calculi amb el boost anterior
 
             for (var i = 0; i < 7; i++)
             {
@@ -353,8 +362,7 @@ public class AcceleratorsManager : MonoBehaviour
             quarkCondensationButton.gameObject.SetActive(data.boostCount > 4);
 
             if (txtCost != null)
-                txtCost.text = $"Cost: {QuarkSingularityCost.Notate(0)} vuitè Acceleradors";
-
+                txtCost.text = $"Singularitat de Quark ({game.data.quarkSingularities}) necessita {QuarkSingularityCost.Notate(0)} vuitens quarks";
             if (singularityBtnImage != null)
                 singularityBtnImage.color = data.AcceleratorsCount[7] >= QuarkSingularityCost ? BuyGreen : BuyRed;
 

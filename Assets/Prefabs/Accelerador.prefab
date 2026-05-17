@@ -126,8 +126,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 90727ef1e5c911a4ebb89c62265b4dd6, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: fee7cb0981897184ca8e254670a1d84f, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -181,8 +181,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Quarks, Assembly-CSharp
-        m_MethodName: BuyQuarks
+        m_TargetAssemblyTypeName: AcceleratorsManager, Assembly-CSharp
+        m_MethodName: BuyAccelerators
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -607,8 +607,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 90727ef1e5c911a4ebb89c62265b4dd6, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: fee7cb0981897184ca8e254670a1d84f, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -662,8 +662,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Quarks, Assembly-CSharp
-        m_MethodName: BuyUntil10Quarks
+        m_TargetAssemblyTypeName: AcceleratorsManager, Assembly-CSharp
+        m_MethodName: BuyUntil10Accelerators
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -10,10 +10,12 @@ using TMPro;
 public class SaveManager : MonoBehaviour
 {
     public GameController game;
+    public OfflineProductionManager offlineProductionManager;
 
     private const string API_URL = "https://pau-joc-backend.onrender.com/api";
     private const string TOKEN_KEY = "cloudToken";
     private const string SAVE_INTERVAL_KEY = "saveInterval";
+    private const string LAST_SAVE_TIME_KEY = "lastSaveTime";
 
     [Header("Crear Usuari")]
     public TMP_InputField registerUsernameInput;
@@ -42,6 +44,7 @@ public class SaveManager : MonoBehaviour
     private void Start()
     {
         game.data = SaveSystem.SaveExists("playerData") ? SaveSystem.LoadPlayer<Data>("playerData") : new Data();
+        offlineProductionManager.CalculateOfflineProduction();
 
         if (saveIntervalSlider != null)
         {
@@ -110,6 +113,16 @@ public class SaveManager : MonoBehaviour
             StartCoroutine(CloudSaveCoroutine(isAuto: false));
         else
             SetStatus("<color=#4AE054>Partida guardada</color> localment.");
+    }
+
+    // ELIMINAR GUARDAT LOCAL
+
+    public void DeleteLocalSave()
+    {
+        SaveSystem.DeleteLocalSave("playerData");
+        game.data = new Data();
+        cloudSaveEnabled = false; // simplement desactivo el cloud save per evitar que el núvol es quedi sense dades
+        SetStatus("<color=#E05454>Dades locals eliminades.</color> Partida nova iniciada.");
     }
 
     // NOVA PARTIDA
@@ -310,4 +323,13 @@ public class SaveManager : MonoBehaviour
     [Serializable] private class TokenResponse { public string token; }
     [Serializable] private class SaveResponse { public string saveData; }
     [Serializable] private class ErrorResponse { public string error; }
+
+
+    // Al marxar del joc (per calcular la producció offline amb series de taylor)
+    private void OnApplicationQuit()
+    {
+        PlayerPrefs.SetString(LAST_SAVE_TIME_KEY, DateTime.UtcNow.ToString("o"));
+        PlayerPrefs.Save();
+        SaveSystem.SavePlayer(game.data, "playerData");
+    }
 }

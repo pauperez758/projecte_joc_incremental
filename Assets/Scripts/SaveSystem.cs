@@ -150,6 +150,16 @@ public class SaveSystem : MonoBehaviour
         }
     }
 
+    public static void DeleteLocalSave(string name)
+    {
+        string path = savePath + name + ".txt";
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+            Debug.Log($"[SaveSystem] Partida local '{name}' eliminada.");
+        }
+    }
+
     public static bool SaveExists(string key)
     {
         string path = savePath + key + ".txt";

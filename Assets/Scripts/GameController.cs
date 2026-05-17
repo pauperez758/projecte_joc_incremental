@@ -13,7 +13,6 @@ public class GameController : MonoBehaviour
     public AcceleratorsManager acceleratorsManager;
     public ParticleUpgradeManager particleUpgradeManager;
     public ReptesManager reptesManager;
-
     public Canvas configCanvas;
     public Canvas acceleratorsCanvas;
     public Canvas achievementsCanvas;
@@ -25,6 +24,7 @@ public class GameController : MonoBehaviour
     public Canvas crearUsuariCanvas;
     public Canvas iniciarSessioCanvas;
     public Canvas tancarSessioCanvas;
+    public Canvas guardatCarregaCanvas;
 
     public CanvasGroup nonTranscendence;
     public CanvasGroup transcendence;
@@ -152,6 +152,7 @@ public class GameController : MonoBehaviour
         crearUsuariCanvas.gameObject.SetActive(false);
         iniciarSessioCanvas.gameObject.SetActive(false);
         tancarSessioCanvas.gameObject.SetActive(false);
+        guardatCarregaCanvas.gameObject.SetActive(false);
 
         switch (location)
         {
@@ -160,6 +161,8 @@ public class GameController : MonoBehaviour
             case "iniciarSessio": iniciarSessioCanvas.gameObject.SetActive(true);
                 break;
             case "tancarSessio": tancarSessioCanvas.gameObject.SetActive(true);
+                break;
+            case "guardatCarrega": guardatCarregaCanvas.gameObject.SetActive(true);
                 break;
         }
     }

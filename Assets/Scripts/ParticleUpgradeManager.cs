@@ -88,9 +88,12 @@ public class ParticleUpgradeManager : MonoBehaviour
                         SetCurrently(i);
                         break;
                     case 14:
+                        string timeStr = game.data.particleFastestPlaytime >= double.MaxValue
+                            ? "cap transcendència encara"
+                            : ParticleUpgradeBoostCurrently(i).ToTimeFormat();
                         particleUpgrade[i].description.text =
-                    $"{particleNames[i]}{ParticleUpgradeBoostCurrently(i).ToTimeFormat()}x" +
-                    $"\nCost: {(i < 16 ? particleUpgradeCosts[i] : particleUpgradePPGainCost)}";
+                            $"{particleNames[i]}{timeStr}" +
+                            $"\nCost: {(i < 16 ? particleUpgradeCosts[i] : particleUpgradePPGainCost)}";
                         break;
                     default:
                         particleUpgrade[i].description.text = $"{particleNames[i]}\nCost: {particleUpgradeCosts[i]}";
@@ -176,7 +179,10 @@ public class ParticleUpgradeManager : MonoBehaviour
             case 6: return Pow(data.particlePoints, 1.5) + 1;
             case 8: return data.particles / 5 + 1;
             case 9: return data.particles / 5 + 1;
-            case 14: return data.particleFastestPlaytime * 10;
+            case 14:
+                return data.particleFastestPlaytime >= double.MaxValue
+                    ? 0  // Encara no s'ha fet cap transcendència
+                    : data.particleFastestPlaytime * 10;
         }
 
         return 0;
