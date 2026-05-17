@@ -37,12 +37,12 @@ public class SaveManager : MonoBehaviour
     public bool IsLoggedIn => PlayerPrefs.HasKey(TOKEN_KEY);
     private string Token => PlayerPrefs.GetString(TOKEN_KEY);
 
-    // ───────────────────────────────────────────
     // INICIALITZACIÓ
-    // ───────────────────────────────────────────
 
     private void Start()
     {
+        game.data = SaveSystem.SaveExists("playerData") ? SaveSystem.LoadPlayer<Data>("playerData") : new Data();
+
         if (saveIntervalSlider != null)
         {
             saveIntervalSlider.minValue = 10f;
@@ -71,9 +71,7 @@ public class SaveManager : MonoBehaviour
             saveIntervalText.text = $"Guardat automàtic: cada {seconds / 60f:N1} minuts";
     }
 
-    // ───────────────────────────────────────────
     // AUTOGUARDAT
-    // ───────────────────────────────────────────
 
     private void Update()
     {
@@ -102,9 +100,7 @@ public class SaveManager : MonoBehaviour
     public void EnableCloudSave() { cloudSaveEnabled = true; }
     public void DisableCloudSave() { cloudSaveEnabled = false; }
 
-    // ───────────────────────────────────────────
     // GUARDAT MANUAL
-    // ───────────────────────────────────────────
 
     public void ManualSave()
     {
@@ -116,10 +112,7 @@ public class SaveManager : MonoBehaviour
             SetStatus("<color=#4AE054>Partida guardada</color> localment.");
     }
 
-    // ───────────────────────────────────────────
     // NOVA PARTIDA
-    // ───────────────────────────────────────────
-
     public void NewGame()
     {
         game.data = new Data();
@@ -127,9 +120,7 @@ public class SaveManager : MonoBehaviour
         EnableAutoSave();
     }
 
-    // ───────────────────────────────────────────
     // CÀRREGA
-    // ───────────────────────────────────────────
 
     public void LocalLoad()
     {
@@ -141,13 +132,13 @@ public class SaveManager : MonoBehaviour
         game.data = SaveSystem.LoadPlayer<Data>("playerData");
         SetStatus("<color=#4AE054>Partida carregada</color> localment.");
         EnableAutoSave();
+
+        if (IsLoggedIn) EnableCloudSave();
     }
 
     public void CloudLoad() => StartCoroutine(CloudLoadCoroutine());
 
-    // ───────────────────────────────────────────
     // AUTH
-    // ───────────────────────────────────────────
 
     public void Register() => StartCoroutine(RegisterCoroutine());
     public void Login() => StartCoroutine(LoginCoroutine());
@@ -196,6 +187,7 @@ public class SaveManager : MonoBehaviour
             PlayerPrefs.Save();
             SetStatus("<color=#4AE054>Sessió iniciada</color> correctament!");
             UpdateSessionStatus(loginUsernameInput.text);
+            if (autoSaveEnabled) EnableCloudSave();
         }
         else
         {
@@ -203,10 +195,7 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    // ───────────────────────────────────────────
     // CLOUD SAVE / LOAD COROUTINES
-    // ───────────────────────────────────────────
-
     private IEnumerator CloudSaveCoroutine(bool isAuto = false)
     {
         if (!IsLoggedIn) { SetStatus("<color=#E05454>Has d'iniciar sessió</color> primer."); yield break; }
@@ -269,10 +258,7 @@ public class SaveManager : MonoBehaviour
         EnableCloudSave();
     }
 
-    // ───────────────────────────────────────────
     // HELPERS
-    // ───────────────────────────────────────────
-
     private string DataToBase64(Data data)
     {
         var formatter = new BinaryFormatter();

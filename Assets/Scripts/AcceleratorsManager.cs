@@ -32,27 +32,29 @@ public class AcceleratorsManager : MonoBehaviour
 
     public BigDouble[] acceleratorBaseCost;
     public BigDouble[] acceleratorCostMult;
-
-    public BigDouble[] acceleratorsBaseCosts;
     public BigDouble AcceleratorCost(int id) => acceleratorBaseCost[id] * BigDouble.Pow(acceleratorCostMult[id], game.data.acceleratorTierMultipliers[id]);
 
     public BigDouble AcceleratorsUntil10Cost(int id) => AcceleratorCost(id) * 10 - AcceleratorCost(id) * game.data.acceleratorsLevels[id];
 
+    // Desactivo aquest accelerator boost i paso a un amb multiplicador base de 2 --> 3 per millorar dramàticament la progressió
+    //private BigDouble AcceleratorBoost(int id) => game.achievementsManager.achievementBoost *
+    //    Pow(game.data.particleUpgradeBought[1] ? 2.2 : 2, game.data.acceleratorTierMultipliers[id]) * game.data.acceleratorsBoosts[id];
+
     private BigDouble AcceleratorBoost(int id) => game.achievementsManager.achievementBoost *
-        Pow(game.data.particleUpgradeBought[1] ? 2.2 : 2, game.data.acceleratorTierMultipliers[id]) * game.data.acceleratorsBoosts[id];
+    Pow(game.data.particleUpgradeBought[1] ? 2.2 : 2, game.data.acceleratorTierMultipliers[id])
+    * game.data.acceleratorsBoosts[id];
 
     // Si id != 1 el boost es multiplica per 0.1. Els quarks 2-4 produeixen menys
     public BigDouble AcceleratorProduction(int id)
     {
         var data = game.data;
 
-        double globalSpeed = 3.0; // *** DEBUG. PER FER EL JOC MÉS RÀPID. ELIMINAR DESPRÉS. ***
 
-
-        return globalSpeed * (id == 1
+        return (id == 1
             ? data.AcceleratorsCount[id - 1] 
             * AcceleratorBoost(id - 1) / (game.spin / 1000)
-            : 0.1 
+            //: 0.1 Posaré 0.15 per augmentar la producció base moltíssim per fer el joc més ràpid i presentable
+            : 0.11
             * data.AcceleratorsCount[id - 1] 
             * AcceleratorBoost(id - 1) / (game.spin / 1000))
                 * particleUpgradeManager.ParticleUpgradeBoostCurrently(0)
@@ -62,15 +64,25 @@ public class AcceleratorsManager : MonoBehaviour
                 * (id == 3 || id == 6 ? particleUpgradeManager.ParticleUpgradeBoostCurrently(8) : 1)
                 * (id == 4 || id == 5 ? particleUpgradeManager.ParticleUpgradeBoostCurrently(9) : 1);
     }
+
+    // 
     public void AcceleratorBoost()
     {
         var data = game.data;
 
         for (int i = 0; i < 8; i++)
         {
-            var tempBoost = BigDouble.Pow(2, data.boostCount - i);
-            data.acceleratorsBoosts[i] = tempBoost < 1 ? 1 : tempBoost;
-            if (i == 7) data.acceleratorsBoosts[i] *= data.quarkCondensationBoost; // *= o +=? TODO: COMPROVAR QUINA OPCIÓ ÉS MÉS ÒPTIMA PEL "PACING" DEL JOC
+            //var tempBoost = BigDouble.Pow(2, data.boostCount - i);
+            //data.acceleratorsBoosts[i] = tempBoost < 1 ? 1 : tempBoost;
+            //if (i == 7) data.acceleratorsBoosts[i] *= data.quarkCondensationBoost;
+
+            // progressió més logarítmica en comptes d'exponencial
+            BigDouble effectiveBoost = data.boostCount - i;
+            if (effectiveBoost <= 0)
+                data.acceleratorsBoosts[i] = 1;
+            else
+                data.acceleratorsBoosts[i] = Pow(effectiveBoost + 1, 1.5);
+            if (i == 7) data.acceleratorsBoosts[i] *= data.quarkCondensationBoost;
         }
     }
 
@@ -229,13 +241,19 @@ public class AcceleratorsManager : MonoBehaviour
         data.highestFirstAccelerators = 0;
     }
 
+    // Canviat el multiplicador base de cost de 1.5 a 1.2
+    //public BigDouble AcceleratorBoostCost => (game.data.boostCount > 4
+    //    ? 20 + (game.data.boostCount - 4) * 15 : 20) - (game.data.particleUpgradeBought[12] ? 9 : 0);
     public BigDouble AcceleratorBoostCost => (game.data.boostCount > 4
-        ? 20 + (game.data.boostCount - 4) * 15 : 20) - (game.data.particleUpgradeBought[12] ? 9 : 0);
-
+    ? 20 + (game.data.boostCount - 4) * 10 : 20) - (game.data.particleUpgradeBought[12] ? 9 : 0);
 
     #region QuarkSingularity
-    public BigDouble QuarkSingularityCost => 80 + game.data.quarkSingularities * 60 
-        - (game.data.particleUpgradeBought[13] ? 9 : 0);
+    // reduït el cost base de 80 a 30 i multiplicador de 60 a 25
+    //public BigDouble QuarkSingularityCost => 80 + game.data.quarkSingularities * 60 
+    //    - (game.data.particleUpgradeBought[13] ? 9 : 0);
+
+    public BigDouble QuarkSingularityCost => 80 + game.data.quarkSingularities * 40
+    - (game.data.particleUpgradeBought[13] ? 9 : 0);
 
     public void BuyQuarkSingularity()
     {
@@ -289,16 +307,14 @@ public class AcceleratorsManager : MonoBehaviour
     {
         if (quarkCondensationToGet > 1)
         {
-            var data = game.data;
-
-            data.highestFirstAccelerators = game.data.AcceleratorsCount[0];
-            data.quarkCondensationBoost *= quarkCondensationToGet;
+            game.data.highestFirstAccelerators = game.data.AcceleratorsCount[0];
+            game.data.quarkCondensationBoost = game.data.quarkCondensationBoost * quarkCondensationToGet;
 
             for (var i = 0; i < 7; i++)
             {
-                data.AcceleratorsCount[i] = 0;
-                data.acceleratorsLevels[i] = 0;
-                data.acceleratorTierMultipliers[i] = 0;
+                game.data.AcceleratorsCount[i] = 0;
+                game.data.acceleratorsLevels[i] = 0;
+                game.data.acceleratorTierMultipliers[i] = 0;
             }
         }
     }
@@ -306,10 +322,13 @@ public class AcceleratorsManager : MonoBehaviour
     private void Start()
     {
         acceleratorsNames = new[] { "Primer", "Segon", "Tercer", "Quart", "Cinquè", "Sisè", "Setè", "Vuitè" };
-        // *** DEBUG. PER FER EL JOC MÉS RÀPID. ELIMINAR DESPRÉS. ***
-        acceleratorBaseCost = new BigDouble[] { 10, 100, 1e4, 1e5, 1e8, 1e11, 1e15, 1e20 };
-        acceleratorCostMult = new BigDouble[] { 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e10 };
+        // Abaix tinc el que és la velocitat normal del joc. Posaré costos DRAMÀTICAMENT més baixos per fer el joc presentable
+        //acceleratorBaseCost = new BigDouble[] { 10, 100, 1e4, 1e5, 1e8, 1e11, 1e15, 1e20 };
+        //acceleratorCostMult = new BigDouble[] { 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e10 };
 
+        // PER A LA PRESENTACIÓ:
+        acceleratorBaseCost = new BigDouble[] { 10, 100, 1e3, 1e4, 1e6, 1e8, 1e10, 1e13 };
+        acceleratorCostMult = new BigDouble[] { 50, 200, 1e3, 5e3, 2e4, 8e4, 3e5, 1e6 };
     }
 
     private void Update()
@@ -345,8 +364,7 @@ public class AcceleratorsManager : MonoBehaviour
             for (int i = 0; i < 8; i++)
             {
                 accelerators[i].nameText.text = $"{acceleratorsNames[i]} Accelerador x{AcceleratorBoost(i).Notate(1)}";
-                accelerators[i].infoText.text = $"{data.AcceleratorsCount[i].Notate(2)} ({data.acceleratorsLevels[i]})";
-                accelerators[i].currentCostText.text = $"Cost: {AcceleratorCost(i).Notate()}";
+                accelerators[i].infoText.text = $"{data.AcceleratorsCount[i].Notate(2)} ({data.acceleratorsLevels[i]}/10)"; accelerators[i].currentCostText.text = $"Cost: {AcceleratorCost(i).Notate()}";
                 accelerators[i].until10CostText.text = $"Fins a 10: Cost : {AcceleratorsUntil10Cost(i).Notate()}";
                 accelerators[i].currentCostButton.color = data.quark >= AcceleratorCost(i) ? BuyGreen : BuyRed;
                 accelerators[i].until10CostButton.color = data.quark >= AcceleratorsUntil10Cost(i) ? BuyGreen : BuyRed;

@@ -47,7 +47,7 @@ public class AchievementManager : MonoBehaviour
             "El límit s'apropa",
             "Compressió total",
             "Col·lapsador de partícules",
-            "Maestro del Spin",
+            "Mestre de l'Spin",
             "Inestabilitat màxima",
             "Ruptura dimensional",
             "Transcendència"
@@ -134,7 +134,7 @@ public class AchievementManager : MonoBehaviour
         if (data.AcceleratorsCount[7] >= 1 && !data.achievementUnlocks[9])
             UnlockAchievement(9);
 
-        if (data.quarkCondensationBoost > 1 && !data.achievementUnlocks[10])
+        if (data.quarkCondensationBoost >= 100 && !data.achievementUnlocks[10])
             UnlockAchievement(10);
 
         if (data.quarkSingularities >= 1 && !data.achievementUnlocks[11])

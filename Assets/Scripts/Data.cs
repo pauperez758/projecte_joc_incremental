@@ -24,7 +24,7 @@ public class Data
     public BigDouble quarkCondensationBoost;
     public BigDouble highestFirstAccelerators;
 
-    public List<bool> achievementUnlocks = new List<bool>(24); // canviar si poso més achievements
+    public List<bool> achievementUnlocks = new List<bool>(16); // canviar si poso més achievements
 
     public BigDouble particles;
 
@@ -46,8 +46,8 @@ public class Data
     {
         totalPlayTime = 0;
 
-        //quark = 10; ACTIVAR MÉS TARD
-        quark = 1e20; // *** DEBUG. PER FER EL JOC MÉS RÀPID. ELIMINAR DESPRÉS. ***
+        quark = 10;
+
         spinLevels = 0;
 
         AcceleratorsCount = new BigDouble[8];
@@ -66,7 +66,7 @@ public class Data
             acceleratorsBoosts[i] = 1; // El multiplicador base ha de ser 1
         }
 
-        achievementUnlocks = CreateList<bool>(24);
+        achievementUnlocks = CreateList<bool>(16);
 
         particles = 0;
         particlePoints = 0;

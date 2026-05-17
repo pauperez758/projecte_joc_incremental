@@ -38,14 +38,14 @@ public class ParticleManager : MonoBehaviour
         transOut.Play("TranscendenceOut", 0, 0);
         transIn.Play("TranscendenceIn", 0, 0);
         Invoke(nameof (TranscendenceReset), 1f);
-        game.data.particlePoints += particleUpgradeManager.particleUpgradePPGainBoost;
+        game.data.particlePoints += particleUpgradeManager.particleUpgradePPGainBoost * 2; // CANVI: cada transcendència dona 2 partícules, no una
     }
 
     public void TranscendenceReset()
     {
         var data = game.data;
 
-        data.quark = 1e20; // *** DEBUG. PER FER EL JOC MÉS RÀPID. ELIMINAR DESPRÉS. ***
+        data.quark = 10;
         data.spinLevels = 0;
         data.AcceleratorsCount = new BigDouble[8];
         data.acceleratorsLevels = new ushort[8];

@@ -51,12 +51,10 @@ public class GameController : MonoBehaviour
 
 
     public void Start()
-    {
-        data = SaveSystem.SaveExists("playerData") ? SaveSystem.LoadPlayer<Data>("playerData") : new Data();
-        
+    {   
         achievementsManager.StartAcheivements();
         particleUpgradeManager.StartParticleUpgrades();
-        reptesManager.StartChallenges();
+        //reptesManager.StartChallenges(); no he arribat a fer els reptes
 
         saveManager.EnableAutoSave();
     }
